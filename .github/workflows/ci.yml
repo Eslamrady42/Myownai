@@ -1,0 +1,30 @@
+name: My Own AI CI
+
+on:
+  push:
+    paths:
+      - "my-own-ai/**"
+  pull_request:
+    paths:
+      - "my-own-ai/**"
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: my-own-ai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: my-own-ai/pyproject.toml
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Run tests
+        run: pytest -q
