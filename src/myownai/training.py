@@ -95,13 +95,15 @@ def train_model(
         model.load_state_dict(checkpoint["model_state"])
         if "optimizer_state" in checkpoint:
             optimizer.load_state_dict(checkpoint["optimizer_state"])
-        if "scheduler_state" in checkpoint:
-            scheduler.load_state_dict(checkpoint["scheduler_state"])
         step = int(checkpoint.get("step", 0))
         if step >= max_steps:
             raise ValueError(
                 f"Checkpoint is already at step {step}; choose --max-steps greater than that."
             )
+        # Continue the cosine schedule against the new total step target.
+        scheduler.last_epoch = step
+        scheduler._step_count = step + 1
+        scheduler._last_lr = [group["lr"] for group in optimizer.param_groups]
 
     model.train()
     while step < max_steps:
