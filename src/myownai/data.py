@@ -20,8 +20,12 @@ def encode_corpus(data_dir: str | Path, tokenizer: OwnTokenizer, max_docs: int |
     ids: list[int] = []
     for path in files:
         text = path.read_text(encoding="utf-8", errors="strict")
-        if text.strip():
-            ids.extend(tokenizer.encode(text, add_eos=True))
+        # Blank lines separate documents. Add EOS to each document rather than
+        # treating the entire corpus file as one unbounded document.
+        for document in text.split("\n\n"):
+            document = document.strip()
+            if document:
+                ids.extend(tokenizer.encode(document, add_eos=True))
     if len(ids) < 3:
         raise ValueError("Corpus is too small; provide more text before training")
     return torch.tensor(ids, dtype=torch.long)
