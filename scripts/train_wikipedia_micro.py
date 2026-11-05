@@ -13,6 +13,22 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import torch
 
+# Kaggle images differ; ensure runtime-only data dependencies exist before
+# importing modules that depend on SentencePiece.
+def ensure_package(import_name: str, package_spec: str) -> None:
+    try:
+        __import__(import_name)
+    except ImportError:
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--quiet", package_spec],
+            check=True,
+        )
+
+
+ensure_package("sentencepiece", "sentencepiece>=0.2")
+ensure_package("datasets", "datasets>=3.3")
+ensure_package("huggingface_hub", "huggingface_hub>=0.27")
+
 from myownai.config import ModelConfig
 from myownai.data import encode_corpus
 from myownai.inference import LocalGenerator
@@ -45,18 +61,6 @@ def main() -> None:
         )
     device_name = torch.cuda.get_device_name(0) if has_cuda else "CPU"
     print(f"Training device: {device_name}", flush=True)
-
-    try:
-        import datasets  # noqa: F401
-        import huggingface_hub  # noqa: F401
-    except ImportError:
-        subprocess.run(
-            [
-                sys.executable, "-m", "pip", "install", "--quiet",
-                "datasets>=3.3", "huggingface_hub>=0.27",
-            ],
-            check=True,
-        )
 
     work_root = Path("/kaggle/working") if Path("/kaggle/working").is_dir() else ROOT / "artifacts"
     work_root.mkdir(parents=True, exist_ok=True)
