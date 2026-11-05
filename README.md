@@ -21,7 +21,6 @@ Python 3.10+, PyTorch 2.2+, and a UTF-8 text corpus you are legally allowed to u
 
 ## Windows quick start
 ```powershell
-cd my-own-ai
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
@@ -42,8 +41,16 @@ Check the printed *actual* vocabulary size. Set `vocab_size` in a copy of `confi
 
 ## First micro training run
 ```powershell
-python scripts/train.py --data-dir datasets/corpus --tokenizer artifacts/tokenizer/tokenizer.model --config configs/micro.json --output-dir artifacts/micro-run --max-steps 100 --batch-size 2
+python scripts/train.py --data-dir datasets/corpus --tokenizer artifacts/tokenizer/tokenizer.model --config configs/micro.json --output-dir artifacts/micro-run --max-steps 100 --batch-size 1 --grad-accum-steps 2
 ```
+
+To continue a run from its latest checkpoint, increase `--max-steps` and pass `--resume-from`:
+
+```powershell
+python scripts/train.py --data-dir datasets/corpus --tokenizer artifacts/tokenizer/tokenizer.model --config configs/micro.json --output-dir artifacts/micro-run --max-steps 200 --batch-size 1 --grad-accum-steps 2 --resume-from artifacts/micro-run/checkpoint.pt
+```
+
+`--max-steps` is the total target step count, not the number of additional steps.
 
 Generate locally:
 ```powershell
