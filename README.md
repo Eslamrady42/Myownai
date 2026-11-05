@@ -91,3 +91,32 @@ and writes a ZIP with the checkpoint and training report. It uses synthetic
 text only as a software smoke test; it is **not** a useful language model.
 The same script can run on CPU for a quick CI check with
 `python scripts/kaggle_smoke_test.py --steps 2`.
+
+## First real Arabic/English corpus run
+
+A one-cell Kaggle notebook is available at
+[`notebooks/kaggle_first_real_training.ipynb`](notebooks/kaggle_first_real_training.ipynb).
+It streams a bounded and balanced sample from the `20231101.ar` and
+`20231101.en` configurations of `wikimedia/wikipedia`, builds per-article
+provenance manifests, trains this project's SentencePiece tokenizer from the
+collected text, and trains a small decoder-only Transformer from random weights.
+
+The standalone corpus builder is:
+
+```bash
+python -m pip install -e ".[data]"
+python scripts/prepare_wikipedia_corpus.py --output-dir artifacts/corpus --articles-per-language 1500
+```
+
+The first GPU run is:
+
+```bash
+python scripts/train_wikipedia_micro.py --require-gpu --articles-per-language 1500 --steps 300 --batch-size 8 --vocab-size 4096
+```
+
+**Dataset terms:** the Wikimedia Wikipedia dataset card declares CC BY-SA 3.0 and
+GFDL. The generated JSONL manifests record article title, URL, dataset revision,
+license, processing, and content hash. Preserve attribution and comply with
+ShareAlike/GFDL terms. Do not publish raw corpus data or trained checkpoints
+until the licensing implications for the intended distribution have been reviewed.
+See [the data policy](docs/DATA_POLICY.md).
