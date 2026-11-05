@@ -56,7 +56,8 @@ def main() -> None:
     from myownai.tokenizer import OwnTokenizer
     from myownai.training import train_model
 
-    work_dir = Path(os.environ.get("MYOWNAI_WORK_DIR", "/kaggle/working/myownai_smoke_test"))
+    default_root = Path("/kaggle/working") if Path("/kaggle/working").is_dir() else project_root / "artifacts"
+    work_dir = Path(os.environ.get("MYOWNAI_WORK_DIR", str(default_root / "myownai_smoke_test")))
     if work_dir.exists():
         shutil.rmtree(work_dir)
     corpus_dir = work_dir / "corpus"
@@ -137,7 +138,7 @@ def main() -> None:
     if missing:
         raise RuntimeError(f"Training did not create required artifacts: {missing}")
 
-    archive_base = Path("/kaggle/working/myownai_smoke_test_results")
+    archive_base = default_root / "myownai_smoke_test_results"
     archive = Path(shutil.make_archive(str(archive_base), "zip", artifacts_dir))
     result = {
         "status": "passed",
