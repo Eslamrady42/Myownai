@@ -171,10 +171,10 @@ def main() -> None:
     documents: list[str] = []
     for language in args.languages:
         language_text = (output_dir / f"{language}.txt").read_text(encoding="utf-8")
-        documents.extend(doc.strip() for doc in language_text.split("\\n\\n") if doc.strip())
+        documents.extend(doc.strip() for doc in language_text.split("\n\n") if doc.strip())
     random.Random(args.seed).shuffle(documents)
     mixed_path = output_dir / "mixed.txt"
-    mixed_path.write_text("\\n\\n".join(documents) + "\\n", encoding="utf-8")
+    mixed_path.write_text("\n\n".join(documents) + "\n", encoding="utf-8")
 
     metadata = {
         "status": "prepared",
