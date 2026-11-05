@@ -76,3 +76,18 @@ Run tests with `pytest`.
 - Memory, RAG, vision, speech, agents, and a full project system are future milestones.
 - GitHub stores source code; it does not supply training GPU compute.
 - Keep large corpora and checkpoints out of ordinary Git commits.
+
+## Kaggle GPU smoke test
+
+For a guided end-to-end test on a Kaggle GPU, import
+[`notebooks/kaggle_gpu_smoke_test.ipynb`](notebooks/kaggle_gpu_smoke_test.ipynb)
+into a new Kaggle Notebook. Select **GPU** under Notebook Settings > Accelerator,
+enable Internet, and run the notebook. It calls
+`python scripts/kaggle_smoke_test.py --require-gpu`.
+
+The script verifies GPU visibility, trains a tiny SentencePiece tokenizer,
+trains a randomly initialized miniature Transformer, runs local generation,
+and writes a ZIP with the checkpoint and training report. It uses synthetic
+text only as a software smoke test; it is **not** a useful language model.
+The same script can run on CPU for a quick CI check with
+`python scripts/kaggle_smoke_test.py --steps 2`.
