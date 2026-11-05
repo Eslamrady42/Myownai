@@ -19,6 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff>=0.4"]
+data = ["datasets>=3.3", "huggingface_hub>=0.27"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
